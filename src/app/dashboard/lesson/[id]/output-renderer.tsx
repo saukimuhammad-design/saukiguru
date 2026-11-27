@@ -63,34 +63,32 @@ export function OutputRenderer({
   const hasOutput = !!output
   const contentJson = hasOutput ? JSON.stringify(output.content, null, 2) : ''
 
-  if (!hasOutput) {
-    return (
-      <Card>
-        <CardContent className="py-12 text-center">
-          <Sparkles className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-medium mb-2">Belum ada {outputTypeInfo?.label}</h3>
-          <p className="text-muted-foreground mb-4">
-            Klik tombol di bawah untuk generate dengan AI
-          </p>
-          <Button onClick={onGenerate} disabled={isGenerating} className="w-full sm:w-auto">
-            {isGenerating ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                Menghasilkan...
-              </>
-            ) : (
-              <>
-                <Sparkles className="h-4 w-4 mr-2" />
-                Generate {outputTypeInfo?.label}
-              </>
-            )}
-          </Button>
-        </CardContent>
-      </Card>
-    )
-  }
+  const noOutputContent = (
+    <Card>
+      <CardContent className="py-12 text-center">
+        <Sparkles className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+        <h3 className="text-lg font-medium mb-2">Belum ada {outputTypeInfo?.label}</h3>
+        <p className="text-muted-foreground mb-4">
+          Klik tombol di bawah untuk generate dengan AI
+        </p>
+        <Button onClick={onGenerate} disabled={isGenerating} className="w-full sm:w-auto">
+          {isGenerating ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              Menghasilkan...
+            </>
+          ) : (
+            <>
+              <Sparkles className="h-4 w-4 mr-2" />
+              Generate {outputTypeInfo?.label}
+            </>
+          )}
+        </Button>
+      </CardContent>
+    </Card>
+  )
 
-  return (
+  const mainContent = hasOutput ? (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-2">
@@ -135,6 +133,12 @@ export function OutputRenderer({
         <RenderedContent content={output.content} outputType={outputType} />
       )}
     </div>
+  ) : null
+
+  return (
+    <>
+      {!hasOutput ? noOutputContent : mainContent}
+    </>
   )
 }
 
@@ -491,7 +495,7 @@ function RemedialRenderer({ content }: { content: any }) {
                   {session.activities.map((a: string, j: number) => <li key={j}>{a}</li>)}
                 </ul>
                 <p className="text-sm text-muted-foreground mt-1"><strong>Materi:</strong> {session.materials.join(', ')}</p>
-                <p className="text-sm text-muted-foreground"><strong>Penilaian:</strong> {session.assessment}</p>
+                <p className="text-muted-foreground"><strong>Penilaian:</strong> {session.assessment}</p>
               </div>
             ))}
             <div>

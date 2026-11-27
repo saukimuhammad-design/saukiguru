@@ -1,27 +1,7 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database (alternatif Supabase self-host)
-  postgres:
-    image: postgres:16-alpine
-    container_name: guruapp-postgres
-    environment:
-      POSTGRES_DB: guruapp
-      POSTGRES_USER: guruapp
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./supabase/schema.sql:/docker-entrypoint-initdb.d/schema.sql
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U guruapp -d guruapp"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - guruapp-network
-    restart: unless-stopped
-
-  # MinIO S3-compatible Storage
+  # MinIO S3-compatible Storage (for file uploads)
   minio:
     image: minio/minio:latest
     container_name: guruapp-minio
@@ -75,27 +55,22 @@ services:
       dockerfile: Dockerfile
     container_name: guruapp-app
     environment:
-      # Supabase (gunakan managed Supabase atau postgres lokal)
-      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-http://postgres:5432}
+      # Supabase Cloud (RECOMMENDED - setup at supabase.com)
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
       SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
-      
-      # Database (jika pakai postgres lokal, setup Supabase-compatible API)
-      # DATABASE_URL: postgresql://guruapp:changeme@postgres:5432/guruapp
-      
+
       # OpenAI / Ollama
       OPENAI_API_KEY: ${OPENAI_API_KEY:-ollama}
       OPENAI_BASE_URL: ${OPENAI_BASE_URL:-http://ollama:11434/v1}
       MODEL_NAME: ${MODEL_NAME:-llama3.1:8b}
-      
+
       # App
       NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
       NODE_ENV: production
     ports:
       - "3000:3000"
     depends_on:
-      postgres:
-        condition: service_healthy
       minio:
         condition: service_healthy
       ollama:
@@ -113,7 +88,6 @@ services:
       - "443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - ./certbot/conf:/etc/letsencrypt:ro
       - ./certbot/www:/var/www/certbot:ro
     depends_on:
@@ -122,7 +96,7 @@ services:
       - guruapp-network
     restart: unless-stopped
 
-  # Certbot untuk SSL Let's Encrypt
+  # Certbot untuk SSL Let's Encrypt (optional, for real domain)
   certbot:
     image: certbot/certbot:latest
     container_name: guruapp-certbot
@@ -132,9 +106,9 @@ services:
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done'"
     networks:
       - guruapp-network
+    profiles: ["ssl"]  # Only run with: docker-compose --profile ssl up -d
 
 volumes:
-  postgres_data:
   minio_data:
   ollama_data:
 

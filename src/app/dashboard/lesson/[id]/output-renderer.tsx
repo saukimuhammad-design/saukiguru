@@ -60,8 +60,10 @@ export function OutputRenderer({
   setEditedContent,
 }: OutputRendererProps) {
   const outputTypeInfo = OUTPUT_TYPES.find(t => t.value === outputType)
+  const hasOutput = !!output
+  const contentJson = hasOutput ? JSON.stringify(output.content, null, 2) : ''
 
-  if (!output) {
+  if (!hasOutput) {
     return (
       <Card>
         <CardContent className="py-12 text-center">
@@ -87,8 +89,6 @@ export function OutputRenderer({
       </Card>
     )
   }
-
-  const contentJson = JSON.stringify(output.content, null, 2)
 
   return (
     <div className="space-y-4">

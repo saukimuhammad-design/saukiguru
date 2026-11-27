@@ -14,7 +14,7 @@ import {
 import { OUTPUT_TYPES } from "@/lib/utils"
 import { cn } from "@/lib/utils"
 import { OutputRenderer } from "./output-renderer"
-import { UseMutationResult, UseQueryClient } from "@tanstack/react-query"
+import { UseMutationResult } from "@tanstack/react-query"
 
 interface Lesson {
   id: string
@@ -70,8 +70,6 @@ export function LessonDetailClient({
   editedContent,
   setEditedContent,
 }: LessonDetailClientProps) {
-  const outputTypeInfo = OUTPUT_TYPES.find(t => t.value === activeOutput)
-
   return (
     <div className="min-h-screen bg-muted/30">
       <header className="border-b bg-background/95 backdrop-blur sticky top-0 z-50">

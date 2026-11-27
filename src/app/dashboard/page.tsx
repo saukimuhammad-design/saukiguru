@@ -63,7 +63,6 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-muted/30">
-      {/* Header */}
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/dashboard" className="flex items-center gap-2 font-bold text-xl text-primary">
@@ -82,7 +81,6 @@ export default function DashboardPage() {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        {/* Tabs */}
         <div className="flex gap-2 mb-8 border-b" role="tablist">
           <button
             role="tab"
@@ -113,7 +111,6 @@ export default function DashboardPage() {
         </div>
 
         {activeTab === "create" ? (
-          {/* Create Form */}
           <div className="max-w-3xl mx-auto">
             <Card>
               <CardHeader>
@@ -207,7 +204,6 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            {/* Output Types Preview */}
             <div className="mt-8">
               <h3 className="text-lg font-semibold mb-4">Jenis Output yang Tersedia</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -235,7 +231,6 @@ export default function DashboardPage() {
             </div>
           </div>
         ) : (
-          {/* Lessons List - Placeholder */}
           <Card>
             <CardHeader>
               <CardTitle>Lesson Saya</CardTitle>

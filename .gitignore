@@ -58,3 +58,5 @@ logs
 
 # Turbo
 .turbo
+.vercel
+.env*

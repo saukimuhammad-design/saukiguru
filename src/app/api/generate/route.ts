@@ -4,6 +4,8 @@ import { PROMPTS, PromptType } from '@/lib/prompts'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
+export const dynamic = 'force-dynamic'
+
 const GenerateSchema = z.object({
   lessonId: z.string().uuid(),
   type: z.enum(['rpp', 'slide', 'soal', 'lks', 'rubrik', 'media', 'remedial', 'enrichment']),

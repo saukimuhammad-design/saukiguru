@@ -64,7 +64,7 @@ export default function LessonDetailPage() {
 
   const lesson = lessonData?.lesson
   const outputs = lesson?.lesson_outputs || []
-  const currentOutput = outputs.find(o => o.type === activeOutput)
+  const currentOutput = outputs.find((o: LessonOutput) => o.type === activeOutput)
 
   const generateMutation = useMutation({
     mutationFn: async (type: OutputType) => {
@@ -80,7 +80,7 @@ export default function LessonDetailPage() {
       queryClient.invalidateQueries({ queryKey: ['lesson', lessonId] })
       toast({ title: "Berhasil", description: `${OUTPUT_TYPES.find(t => t.value === activeOutput)?.label} digenerate`, variant: "success" })
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast({ title: "Error", description: error.message, variant: "destructive" })
     },
   })
@@ -95,7 +95,7 @@ export default function LessonDetailPage() {
       router.push("/dashboard")
       router.refresh()
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast({ title: "Error", description: error.message, variant: "destructive" })
     },
   })

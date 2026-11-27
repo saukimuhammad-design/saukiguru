@@ -91,11 +91,11 @@ export function OutputRenderer({
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => setEditedContent(contentJson); setEditMode(true)}>
+          <Button variant="outline" size="sm" onClick={() => { setEditedContent(contentJson); setEditMode(true); }}>
             <Edit className="h-4 w-4 mr-1" />
             Edit JSON
           </Button>
-          <Button variant="outline" size="sm" onClick={() => setEditMode(false); setEditedContent("")}>
+          <Button variant="outline" size="sm" onClick={() => { setEditMode(false); setEditedContent(""); }}>
             <Eye className="h-4 w-4 mr-1" />
             Lihat Render
           </Button>
@@ -108,7 +108,7 @@ export function OutputRenderer({
             <CardTitle className="text-lg flex items-center justify-between">
               Edit JSON
               <Button variant="ghost" size="sm" onClick={() => {
-                try { JSON.parse(editedContent); setEditMode(false) } catch { alert("JSON tidak valid") }
+                try { JSON.parse(editedContent); setEditMode(false); } catch { alert("JSON tidak valid"); }
               }}>
                 Simpan
               </Button>

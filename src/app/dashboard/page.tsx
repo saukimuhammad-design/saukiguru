@@ -40,12 +40,12 @@ export default function DashboardPage() {
       if (!res.ok) throw new Error("Gagal membuat lesson")
       return res.json()
     },
-    onSuccess: (data) => {
+    onSuccess: (data: { lesson: { id: string } }) => {
       toast({ title: "Berhasil", description: "Lesson dibuat", variant: "success" })
       router.push(`/dashboard/lesson/${data.lesson.id}`)
       router.refresh()
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast({ title: "Error", description: error.message, variant: "destructive" })
     },
   })

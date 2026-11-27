@@ -64,88 +64,103 @@ export function OutputRenderer({
   const contentJson = hasOutput ? JSON.stringify(output.content, null, 2) : ''
 
   if (!hasOutput) {
-    return (
-      <Card>
-        <CardContent className="py-12 text-center">
-          <Sparkles className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-medium mb-2">Belum ada {outputTypeInfo?.label}</h3>
-          <p className="text-muted-foreground mb-4">
-            Klik tombol di bawah untuk generate dengan AI
-          </p>
-          <Button onClick={onGenerate} disabled={isGenerating} className="w-full sm:w-auto">
-            {isGenerating ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                Menghasilkan...
-              </>
-            ) : (
-              <>
-                <Sparkles className="h-4 w-4 mr-2" />
-                Generate {outputTypeInfo?.label}
-              </>
-            )}
-          </Button>
-        </CardContent>
-      </Card>
-    )
+    return renderNoOutput(outputTypeInfo, onGenerate, isGenerating)
   }
 
-  return renderMainContent()
+  return renderMainContent(hasOutput, output, contentJson, editMode, setEditMode, editedContent, setEditedContent, outputType)
+}
 
-  function renderMainContent() {
-    return (
-      <div className="space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">
-              v{output.version} • {formatRelativeTime(output.created_at)}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => setEditedContent(contentJson); setEditMode(true)}>
-              <Edit className="h-4 w-4 mr-1" />
-              Edit JSON
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => setEditMode(false); setEditedContent("")}>
-              <Eye className="h-4 w-4 mr-1" />
-              Lihat Render
-            </Button>
-          </div>
+function renderNoOutput(outputTypeInfo: any, onGenerate: () => void, isGenerating: boolean) {
+  return (
+    <Card>
+      <CardContent className="py-12 text-center">
+        <Sparkles className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+        <h3 className="text-lg font-medium mb-2">Belum ada {outputTypeInfo?.label}</h3>
+        <p className="text-muted-foreground mb-4">
+          Klik tombol di bawah untuk generate dengan AI
+        </p>
+        <Button onClick={onGenerate} disabled={isGenerating} className="w-full sm:w-auto">
+          {isGenerating ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              Menghasilkan...
+            </>
+          ) : (
+            <>
+              <Sparkles className="h-4 w-4 mr-2" />
+              Generate {outputTypeInfo?.label}
+            </>
+          )}
+        </Button>
+      </CardContent>
+    </Card>
+  )
+}
+
+function renderMainContent(
+  hasOutput: boolean,
+  output: any,
+  contentJson: string,
+  editMode: boolean,
+  setEditMode: (v: boolean) => void,
+  editedContent: string,
+  setEditedContent: (v: string) => void,
+  outputType: any
+) {
+  if (!hasOutput || !output) return null
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">
+            v{output.version} • {formatRelativeTime(output.created_at)}
+          </span>
         </div>
-
-        {editMode ? renderEditMode() : renderViewMode()}
-      </div>
-    )
-  }
-
-  function renderEditMode() {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => setEditedContent(contentJson); setEditMode(true)}>
+            <Edit className="h-4 w-4 mr-1" />
             Edit JSON
-            <Button variant="ghost" size="sm" onClick={() => {
-              try { JSON.parse(editedContent); setEditMode(false) } catch { alert("JSON tidak valid") }
-            }}>
-              Simpan
-            </Button>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Textarea
-            value={editedContent}
-            onChange={(e) => setEditedContent(e.target.value)}
-            className="font-mono text-sm h-[500px]"
-            placeholder="Edit JSON di sini..."
-          />
-        </CardContent>
-      </Card>
-    )
-  }
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => setEditMode(false); setEditedContent("")}>
+            <Eye className="h-4 w-4 mr-1" />
+            Lihat Render
+          </Button>
+        </div>
+      </div>
 
-  function renderViewMode() {
-    return <RenderedContent content={output.content} outputType={outputType} />
-  }
+      {editMode ? renderEditMode(editedContent, setEditedContent, setEditMode) : renderViewMode(output.content, outputType)}
+    </div>
+  )
+}
+
+function renderEditMode(editedContent: string, setEditedContent: (v: string) => void, setEditMode: (v: boolean) => void) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg flex items-center justify-between">
+          Edit JSON
+          <Button variant="ghost" size="sm" onClick={() => {
+            try { JSON.parse(editedContent); setEditMode(false) } catch { alert("JSON tidak valid") }
+          }}>
+            Simpan
+          </Button>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Textarea
+          value={editedContent}
+          onChange={(e) => setEditedContent(e.target.value)}
+          className="font-mono text-sm h-[500px]"
+          placeholder="Edit JSON di sini..."
+        />
+      </CardContent>
+    </Card>
+  )
+}
+
+function renderViewMode(content: any, outputType: any) {
+  return <RenderedContent content={content} outputType={outputType} />
 }
 
 function RenderedContent({ content, outputType }: { content: any; outputType: OutputType }) {
